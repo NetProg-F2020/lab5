@@ -77,6 +77,7 @@ def guide_record_route(stub):
     print("Passed %s features " % route_summary.feature_count)
     print("Travelled %s meters " % route_summary.distance)
     print("It took %s seconds " % route_summary.elapsed_time)
+    print("It had the ID %s" % route_summary.this_id)
 
 
 def generate_messages():
@@ -99,6 +100,14 @@ def guide_route_chat(stub):
               (response.message, response.location))
 
 
+def guide_route_retrieve(stub):
+    counter = 0 
+    print("route ID = 0")
+    route = stub.RouteRetrieve(route_guide_pb2.PointID(request_id=0))
+    for point in route:
+            print("Step %s at lat %s lon %s", counter, point.latitude, point.longitude)
+
+
 def run():
     # NOTE(gRPC Python Team): .close() is possible on a channel and should be
     # used in circumstances in which the with statement does not fit the needs
@@ -113,6 +122,8 @@ def run():
         guide_record_route(stub)
         print("-------------- RouteChat --------------")
         guide_route_chat(stub)
+        print("-------------- RouteRetrieve --------------")
+        guide_route_retrieve(stub)
 
 
 if __name__ == '__main__':

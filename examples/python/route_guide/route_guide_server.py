@@ -60,6 +60,8 @@ class RouteGuideServicer(route_guide_pb2_grpc.RouteGuideServicer):
 
     def __init__(self):
         self.db = route_guide_resources.read_route_guide_database()
+        self.curr_id = 0
+        self.route_dict = {}
 
     def GetFeature(self, request, context):
         feature = get_feature(self.db, request)
@@ -81,6 +83,9 @@ class RouteGuideServicer(route_guide_pb2_grpc.RouteGuideServicer):
                 yield feature
 
     def RecordRoute(self, request_iterator, context):
+        this_id = self.curr_id
+        self.route_dict[self.curr_id] = request_iterator
+        self.curr_id += 1
         point_count = 0
         feature_count = 0
         distance = 0.0
@@ -99,7 +104,20 @@ class RouteGuideServicer(route_guide_pb2_grpc.RouteGuideServicer):
         return route_guide_pb2.RouteSummary(point_count=point_count,
                                             feature_count=feature_count,
                                             distance=int(distance),
-                                            elapsed_time=int(elapsed_time))
+                                            elapsed_time=int(elapsed_time), 
+                                            this_id=int(this_id))
+    
+    def RouteRetrieve(self, request, context):
+        request_id = request.request_id
+        if request_id in self.route_dict:
+            print("found")
+            request_iterator = self.route_dict[request_id]
+            for point in request_iterator:
+                print("point lat %s, lon %s", point.latitude, point.longitude)
+                yield point
+        else:
+            print("not found")
+            yield
 
     def RouteChat(self, request_iterator, context):
         prev_notes = []

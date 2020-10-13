@@ -50,6 +50,8 @@ service RouteGuide {
   // Accepts a stream of RouteNotes sent while a route is being traversed,
   // while receiving other RouteNotes (e.g. from other users).
   rpc RouteChat(stream RouteNote) returns (stream RouteNote) {}
+
+  rpc RouteRetrieve(PointID) returns (stream Point) {}
 }
 
 // Points are represented as latitude-longitude pairs in the E7 representation
@@ -108,4 +110,11 @@ message RouteSummary {
 
   // The duration of the traversal in seconds.
   int32 elapsed_time = 4;
+
+  // The route ID.
+  int32 this_id = 5;
+}
+
+message PointID {
+  int32 request_id = 1;
 }
