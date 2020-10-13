@@ -105,7 +105,8 @@ def guide_route_retrieve(stub):
     print("route ID = 0")
     route = stub.RouteRetrieve(route_guide_pb2.PointID(request_id=0))
     for point in route:
-            print("Step %s at lat %s lon %s", counter, point.latitude, point.longitude)
+            print("Step %s at lat %s lon %s" % (counter, point.latitude, point.longitude))
+            counter += 1
 
 
 def run():
